@@ -4,6 +4,9 @@ from mshr import *
 import ufl
 from ufl import tanh
 
+##################################################################################
+#Defining Elasticity and Fracture Functions:
+
 def W0(u): #Elastic energy of intact material
     eps = variable(sym(grad(u)))
     e11, e12, e22 = eps[0,0], eps[0,1], eps[1,1]
@@ -118,7 +121,7 @@ ffc_options = {"optimize": True, \
                 "precompute_ip_const": True}   
 parameters["form_compiler"]["quadrature_degree"] = 1
 
-
+##################################################################################
 #Creating the domain and mesh:
 class MeshGenerator:
     def __init__(self, base_shape, hole_shape, refinement_criteria):
@@ -147,7 +150,8 @@ if __name__ == "__main__":
     mesh_generator = MeshGenerator(base, hole, refinement_criteria)
     mesh = mesh_generator.get_mesh()    
 
-
+##################################################################################
+#Defining Function Spaces:
 W = VectorFunctionSpace(mesh, 'CG', 1)
 V1 = FunctionSpace(mesh, 'CG', 1)
 u, v, du = Function(W), TestFunction(W), TrialFunction(W)
@@ -162,6 +166,7 @@ grad_phi = Function(W)
 grad_phi1 = Function(W)
 q_gr_phi = TestFunction(W)
 
+##################################################################################
 #Defining boundaries of the domain:
 def top(x, on_boundary):
     return near(x[1], 1) and on_boundary
@@ -192,11 +197,10 @@ AutoSubDomain(left).mark(boundary_subdomains, 1)
 AutoSubDomain(right).mark(boundary_subdomains, 2)
 dss = ds(subdomain_data=boundary_subdomains)
 
-bc_phi = []
-bc_d=[]
 
 d, vd, dd = Function(W), TestFunction(W), TrialFunction(W)
 dold, dnew = Function(W), Function(W)
+
 class InitialConditionVec(UserExpression):
     def eval_cell(self, value, x, ufl_cell):
         if x[0]**2 + (x[1])**2 <= 0.003:
@@ -245,7 +249,8 @@ c2212 =  C2212 /max_c
 c2121 = c1212
 
 Gc, l, eta_eps, Cr, la =  1*1.e-7 , 0.04, 1.e-3, 1.e-3, 0.01         
-    
+
+
 Pi1 = total_energy(u, phiold, dold, phi_Prev, grad_phi) * dx   \
     -  LoadLeft *u[0]*dss(1) - LoadRight *u[0]*dss(2)       					    
 E_du = derivative(Pi1, u, v)   
@@ -253,6 +258,7 @@ J_u = derivative(E_du, u, du)
 p_disp = NonlinearVariationalProblem(E_du, u, bc_u, J_u)
 solver_disp = NonlinearVariationalSolver(p_disp)
 
+bc_phi = []
 Pi2 = total_energy(unew, phi, dold, phi_Prev, grad_phi1) * dx \
     -  LoadLeft *u[0]*dss(1) - LoadRight *u[0]*dss(2) 
 E_phi = derivative(Pi2, phi, vphi) 
@@ -260,6 +266,7 @@ J_phi  = derivative(E_phi, phi, dphi)
 p_phi = NonlinearVariationalProblem(E_phi, phi, bc_phi ,J_phi)
 solver_phi = NonlinearVariationalSolver(p_phi)
 
+bc_d=[]
 Pi3 = E_helm(phinew,d, d_Prev) * dx          					    
 E_dd = derivative(Pi3, d, vd)   
 J_d = derivative(E_dd, d, dd)    
