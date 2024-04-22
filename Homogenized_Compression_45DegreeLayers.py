@@ -4,7 +4,7 @@ from mshr import *
 import ufl
 from ufl import tanh
 
-def W0(u):
+def W0(u): #Elastic energy of intact material
     eps = variable(sym(grad(u)))
     e11, e12, e22 = eps[0,0], eps[0,1], eps[1,1]
     E = 0.5*c1111*e11**2 + 0.5*c2222*e22**2 + 2*c2121*e12**2 + 2*c1112*e12*e11 +\
@@ -13,7 +13,7 @@ def W0(u):
     return [E, stress]
 
 
-def W1(u,d): 
+def W1(u,d): #Elastic energy of cracked material
     eps = variable(sym(grad(u)))
     e11, e12, e22 = eps[0,0], eps[0,1], eps[1,1]
     d= variable(d)           
