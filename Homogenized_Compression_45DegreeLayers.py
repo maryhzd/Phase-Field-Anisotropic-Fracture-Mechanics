@@ -21,6 +21,8 @@ def W1(u,d): #Elastic energy of cracked material
     e11_n = e22*n_1**2 -2*e12*n_1*n_2 + e11*n_2**2
     e22_n = e11*n_1**2 + 2*e12*n_1*n_2 + e22*n_2**2 
     n1 ,n2 =  d[0]/(sqrt(dot(d,d))) ,  d[1]/(sqrt(dot(d,d)))
+
+    #Anisotropic elasticity tensor components in n1-n2 basis:
     
     c_tttt = n2**4 *c1111 + n1**4 *c2222 + 4*n1**2 *n2**2*c2121 \
         -4*n2**3*n1*c1112 -4*n1**3*n2*c2212 + 2*n1**2*n2**2 *c1122 
