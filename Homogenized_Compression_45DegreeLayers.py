@@ -117,6 +117,9 @@ ffc_options = {"optimize": True, \
                 "precompute_basis_const": True, \
                 "precompute_ip_const": True}   
 parameters["form_compiler"]["quadrature_degree"] = 1
+
+
+#Creating the domain and mesh:
 class MeshGenerator:
     def __init__(self, base_shape, hole_shape, refinement_criteria):
         self.mesh = self._generate_and_refine_mesh(base_shape, hole_shape, refinement_criteria)
@@ -159,26 +162,28 @@ grad_phi = Function(W)
 grad_phi1 = Function(W)
 q_gr_phi = TestFunction(W)
 
+#Defining boundaries of the domain:
 def top(x, on_boundary):
     return near(x[1], 1) and on_boundary
 def bot(x, on_boundary):
     return near(x[1], -1) and on_boundary
 def bot_center(x, on_boundary):
     return near(x[0], 0) and near(x[1], -1) #and on_boundary
-
 def left(x, on_boundary):
     return near(x[0], -0.5) and on_boundary
-
 def right(x, on_boundary):
     return near(x[0], 0.5) and on_boundary
-
+    
+#Defining dirichlet boundary conditions:
 side_coef = 0.04 
 LoadTop = Expression("-3*side_coef*t", t = 0, side_coef=side_coef, degree=1)
 LoadBot = Expression("3*side_coef*t", t = 0, side_coef=side_coef, degree=1)
 bcbot= DirichletBC(W.sub(1), LoadBot, bot)
 bcbot1 = DirichletBC(W.sub(0), Constant(0), bot_center, method="pointwise")
 bctop1= DirichletBC(W.sub(1), LoadTop, top)
-bc_u = [bcbot, bctop1, bcbot1] 
+bc_u = [bcbot, bctop1, bcbot1] #Dirichlet boundary condition
+
+#Defining traction boundary conditions:
 LoadLeft = Expression("t*side_coef", t = 0, side_coef= side_coef, degree=1)
 LoadRight = Expression("-t*side_coef", t = 0, side_coef=side_coef, degree=1)
 boundary_subdomains = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
@@ -221,6 +226,8 @@ phinew.interpolate(InitialConditionScal())
 phi_Prev.interpolate(InitialConditionScal())
 grad_phi = project(grad(phi), W)
 
+
+#Anisotropic Elasticity Tensor Components:
 C1111=  17921.25
 C2222=  17921.25
 C1122=  5291.25
