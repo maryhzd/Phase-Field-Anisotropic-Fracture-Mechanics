@@ -123,6 +123,7 @@ parameters["form_compiler"]["quadrature_degree"] = 1
 
 ##################################################################################
 #Creating the domain and mesh:
+
 class MeshGenerator:
     def __init__(self, base_shape, hole_shape, refinement_criteria):
         self.mesh = self._generate_and_refine_mesh(base_shape, hole_shape, refinement_criteria)
@@ -152,6 +153,7 @@ if __name__ == "__main__":
 
 ##################################################################################
 #Defining Function Spaces:
+
 W = VectorFunctionSpace(mesh, 'CG', 1)
 V1 = FunctionSpace(mesh, 'CG', 1)
 u, v, du = Function(W), TestFunction(W), TrialFunction(W)
@@ -166,8 +168,12 @@ grad_phi = Function(W)
 grad_phi1 = Function(W)
 q_gr_phi = TestFunction(W)
 
+d, vd, dd = Function(W), TestFunction(W), TrialFunction(W)
+dold, dnew = Function(W), Function(W)
+
 ##################################################################################
 #Defining boundaries of the domain:
+
 def top(x, on_boundary):
     return near(x[1], 1) and on_boundary
 def bot(x, on_boundary):
@@ -180,6 +186,7 @@ def right(x, on_boundary):
     return near(x[0], 0.5) and on_boundary
     
 #Defining dirichlet boundary conditions:
+
 side_coef = 0.04 
 LoadTop = Expression("-3*side_coef*t", t = 0, side_coef=side_coef, degree=1)
 LoadBot = Expression("3*side_coef*t", t = 0, side_coef=side_coef, degree=1)
@@ -197,9 +204,8 @@ AutoSubDomain(left).mark(boundary_subdomains, 1)
 AutoSubDomain(right).mark(boundary_subdomains, 2)
 dss = ds(subdomain_data=boundary_subdomains)
 
-
-d, vd, dd = Function(W), TestFunction(W), TrialFunction(W)
-dold, dnew = Function(W), Function(W)
+##################################################################################
+#Initializing crack scalar and vector:
 
 class InitialConditionVec(UserExpression):
     def eval_cell(self, value, x, ufl_cell):
@@ -230,8 +236,9 @@ phinew.interpolate(InitialConditionScal())
 phi_Prev.interpolate(InitialConditionScal())
 grad_phi = project(grad(phi), W)
 
+##################################################################################
+#Material and phase-field Parameters:
 
-#Anisotropic Elasticity Tensor Components:
 C1111=  17921.25
 C2222=  17921.25
 C1122=  5291.25
@@ -250,6 +257,8 @@ c2121 = c1212
 
 Gc, l, eta_eps, Cr, la =  1*1.e-7 , 0.04, 1.e-3, 1.e-3, 0.01         
 
+##################################################################################
+#Creating Solvers and ajusting their parameters:
 
 Pi1 = total_energy(u, phiold, dold, phi_Prev, grad_phi) * dx   \
     -  LoadLeft *u[0]*dss(1) - LoadRight *u[0]*dss(2)       					    
@@ -278,17 +287,22 @@ bc_gr_phi = []
 
 prm1 = solver_disp.parameters
 prm1['newton_solver']['maximum_iterations'] = 1000
+prm1['newton_solver']['relaxation_parameter'] = 0.3
+
 prm2 = solver_phi.parameters
 prm2['newton_solver']['maximum_iterations'] = 1000
+
 prm3 = solver_d.parameters
 prm3['newton_solver']['maximum_iterations'] = 1000
+prm3['newton_solver']['relaxation_parameter'] = 0.5
+
+
+##################################################################################
+#Solving equations and saving files:
 
 CrackScal_file = File ("./Result/crack_scalar.pvd")
 CrackVec_file = File ("./Result/crack_Vec.pvd")
 Displacement_file = File ("./Result/displacement.pvd") 
-
-prm1['newton_solver']['relaxation_parameter'] = 0.3
-prm3['newton_solver']['relaxation_parameter'] = 0.5
 
 t = 0
 u_r = 0.2
