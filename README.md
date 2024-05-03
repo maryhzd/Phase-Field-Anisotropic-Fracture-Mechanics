@@ -12,7 +12,7 @@ This document summarizes the constants used in the phase-field calculations for 
 | `alpha`       | `-0.99`             | Anisotropy parameter 1                  |
 | `alpha_1`     | `-0.99`             | Anisotropy parameter 2                  |
 | `epsilon`     | `0.04`              | Regularization parameter                |
-| `g_m`         | `10`                | Critical value of |grad_phi|            |
+| `g_m`         | `10`                | Critical value of |∇φ|                  |
 | `l_1`         | `0.01`              | Length scale parameter 1                |
 | `phi_m`       | `0.98`              | Critical phase-field value              |
 | `l_2`         | `0.001`             | Length scale parameter 2                |
