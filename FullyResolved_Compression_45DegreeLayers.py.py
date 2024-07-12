@@ -220,9 +220,20 @@ phinew.interpolate(InitialConditionScal())
 phi_Prev.interpolate(InitialConditionScal())
 
 
-mu1, mu2 =1, 0.5
-GC1 = 1*1.e-6
-GC2 = 1*1.e-7
+C1111=  17842222222.222225
+C2222=  17842222222.222225
+C1122=  6268888888.88889
+C1212=  6268888888.88889
+C1112=  -482222222.2222223
+C2212=  -482222222.2222223
+
+max_c = (max(C1111, C2222, C1122, C1212, C1112, C2212))/1.5
+
+nu = 0.25
+Y1 , Y2 = 21.7 * 1e9 , 10.85 * 1e9
+mu1, mu2 = Y1/(2+2*nu) / max_c, Y2/(2+2*nu) /max_c
+GC1 = 4e5 / max_c
+GC2 = 4e4 /max_c
 
 class Gc_Subclass(UserExpression):
     def eval_cell(self, value, x, ufl_cell):      
@@ -262,7 +273,7 @@ mu.interpolate(Mu_Subclass())
 Mu_file = File ("./Result/Mu.pvd")
 Mu_file << mu
 
-nu = 0.252
+
 lmbda = 2*mu*nu/(1-2*nu)
 
             
@@ -329,7 +340,7 @@ prm1['newton_solver']['relaxation_parameter'] = 0.3
 prm3['newton_solver']['relaxation_parameter'] = 0.5
 
 t = 0
-u_r = 0.2
+u_r = 2
 deltaT  = 1.e-3 #0.01
 tol = 1.e-3 #deltaT = 0.01 and tol = 0.001 resulted in the crack growth suddenly all over the domain, even in the first step
 Stress_tot = Function(TS)
