@@ -72,12 +72,12 @@ def fourth_and_second_tensor(u):
     M = outer(a,a)
     alpha = 100 #200 
     alpha1 = 100 #200 
-    A_second_order = I + alpha * M 
+    A_second_order =  (I + alpha * M )
     i,j,k,l = ufl.indices(4)
     dim_mesh = mesh.geometry().dim()
     delta = Identity(dim_mesh)
     Identity_fourth = as_tensor( 0.5*(delta[i,k]*delta[j,l] + delta[i,l]*delta[j,k] ), (i,j,k,l) )
-    A_fourth_order = Identity_fourth + alpha1 * outer(M,M) 
+    A_fourth_order = (Identity_fourth + alpha1 * outer(M,M) )
     return [A_second_order, A_fourth_order] 
 
 def anisotropic_surface_energy(u,phi, grad_phi):
@@ -263,23 +263,23 @@ phinew.interpolate(InitialConditionScal())
 phi_Prev.interpolate(InitialConditionScal())
 
 
-C1111=  17921.250000000004
-C2222=  17921.250000000004
-C1122=  5291.25
-C1212=  6671.250000000002
-C1112=  -397.75
-C2212=  -397.7499999999991
+C1111=  17842222222.222225
+C2222=  17842222222.222225
+C1122=  6268888888.88889
+C1212=  6268888888.88889
+C1112=  -482222222.2222223
+C2212=  -482222222.2222223
 
 max_c = (max(C1111, C2222, C1122, C1212, C1112, C2212))/1.5
 c1111 =  C1111 /max_c
 c2222 =  C2222 /max_c
-c1122 =  C1122 /max_c
+c1122 = C1122 /max_c
 c1212 =  C1212 /max_c
-c1112 =  C1112 /max_c
-c2212 =  C2212 /max_c
+c1112 = C1112 /max_c
+c2212 = C2212 /max_c
 c2121 = c1212
 
-Gc =  1*1.e-7 #1*1.e-7           
+Gc =  2*4e4 /max_c #1*1.e-7           
 l, eta_eps = 0.04, 1.e-3
 Cr = 1.e-3
 
@@ -334,7 +334,7 @@ prm1['newton_solver']['relaxation_parameter'] = 0.3
 prm3['newton_solver']['relaxation_parameter'] = 0.5
 
 t = 0
-u_r = 0.2
+u_r = 2
 deltaT  = 1.e-3
 tol = 1e-3
 Stress_tot = Function(TS)
