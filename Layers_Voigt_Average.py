@@ -1,6 +1,6 @@
 import numpy
-Y1, nu1 = 21700, 0.23
-Y2, nu2 = 11900, 0.21
+Y1, nu1 = 21700, 0.25
+Y2, nu2 = 11900, 0.25
 
 def Param(Y,nu):
     Mu = Y/(2+2*nu)
