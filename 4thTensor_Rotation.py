@@ -1,18 +1,19 @@
 import numpy as np
 import math
 C_p = np.zeros((2, 2, 2, 2))
-C_p[0, 0, 0, 0] = 17482 #c1111 from file
-C_p[1, 1, 1, 1] = 19073 #c2222 from file
+# C tensor components for a rock with vertical layers
+C_p[0, 0, 0, 0] = 17360000000.0 #c1111 from file
+C_p[1, 1, 1, 1] = 19288888888.88889 #c2222 from file
 
-C_p[0, 0, 1, 1] = 4935 #c1122 from file
-C_p[1, 1, 0, 0] = 4935 #c1122 from file
+C_p[0, 0, 1, 1] = 5786666666.666666 #c1122 from file
+C_p[1, 1, 0, 0] = 5786666666.666666 #c1122 from file
 
-C_p[0, 1, 0, 1] =  6315 #c1212 from file
-C_p[1, 0, 0, 1] = 6315 #c1212 from file
-C_p[0, 1, 1, 0] = 6315 #c1212 from file
-C_p[1, 0, 1, 0] = 6315 #c1212 from file
+C_p[0, 1, 0, 1] =  5786666666 #c1212 from file
+C_p[1, 0, 0, 1] = 5786666666 #c1212 from file
+C_p[0, 1, 1, 0] = 5786666666 #c1212 from file
+C_p[1, 0, 1, 0] = 5786666666 #c1212 from file
 
-degrees = 0
+degrees = -15 # To calculate the C tensor components for layers oriented in 75 degrees with e1 axis
 alpha = math.radians(degrees)
 A = np.zeros((2, 2))
 A[0,0] = math.cos(alpha )
